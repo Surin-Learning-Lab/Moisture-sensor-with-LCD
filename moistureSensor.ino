@@ -6,7 +6,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);  // Initializing the LCD screen with I2C add
 int Moisture_signal = A0;  // Define the Analog pin# on the Arduino for the soil moisture sensor signal
 int relay = 6;
 int Moisture;
-unsigned long previousMillis = 0;  // Variable to store the last time moisture was checked
+unsigned long previousMoistureCheckMillis = 0;  // Variable to store the last time moisture was checked
 const long interval = 3600000;     // Interval to check moisture (in milliseconds) - 1 hour
 
 void setup() {
@@ -18,7 +18,7 @@ void setup() {
   lcd.setCursor(0, 1);  // Setting the cursor position to column 0, row 1
   lcd.print(":)");  // Displaying the symbol ":)"
 
-  delay(5000);  // Waiting for 2 seconds
+  delay(5000);  // Waiting for 5 seconds
 
   lcd.clear();  // Clearing the LCD screen
 
@@ -28,23 +28,40 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();  // Get the current time
 
-  if (currentMillis - previousMillis >= interval) {
-    // It's time to check the moisture
-    previousMillis = currentMillis;  // Save the last time moisture was checked
+  // Calculate time remaining until next moisture check
+  unsigned long timeSinceLastMoistureCheck = currentMillis - previousMoistureCheckMillis;
+  long timeRemaining = interval - timeSinceLastMoistureCheck;
 
+  // If countdown timer reaches 0 or it's time to check moisture
+  if (timeRemaining <= 0) {
+    previousMoistureCheckMillis = currentMillis;  // Save the current time as last moisture check time
     Moisture = analogRead(Moisture_signal);
     Serial.print("Soil Moisture Level: ");
     Serial.println(Moisture);
 
+    lcd.clear();  // Clear the LCD screen
+
     lcd.setCursor(0, 0);         // Setting the cursor position to column 0, row 0
     lcd.print("Moisture :");        // Displaying the text "Moisture :"
     lcd.print(Moisture);            // Displaying the read value
-    lcd.print("    ");           // Displaying empty spaces to clear previous characters
+    lcd.setCursor(0, 1);         // Setting the cursor position to column 0, row 1
+    lcd.print("Time left: ");        // Displaying the text "Time left: "
+    lcd.print("   "); // Clear previous countdown display
+    lcd.setCursor(11, 1); // Move cursor to display time left
+    lcd.print("0s"); // Default display 0s
 
-    if (Moisture < 1000 && Moisture > 500) {
+    if (Moisture < 1000 && Moisture > 450) {
       digitalWrite(relay, HIGH);
-      delay(120000);  // Delay for 2 minute
+      delay(120000);  // Delay for 2 minutes
       digitalWrite(relay, LOW);
     }
+  } else {
+    // Display the countdown timer
+    lcd.setCursor(11, 1); // Move cursor to display time left
+    // lcd.print("Time: ");
+    lcd.print(timeRemaining / 1000); // Displaying remaining time in seconds
+    lcd.print("s");               // Displaying the unit for seconds
   }
 }
+
+
