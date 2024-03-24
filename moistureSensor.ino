@@ -4,10 +4,10 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // Initializing the LCD screen with I2C address, 16 columns, and 2 rows
 
 int Moisture_signal = A0;  // Define the Analog pin# on the Arduino for the soil moisture sensor signal
-int relay = 6;
+int relay = 2;
 int Moisture;
 unsigned long previousMoistureCheckMillis = 0;  // Variable to store the last time moisture was checked
-const long interval = 3600000;     // Interval to check moisture (in milliseconds) - 1 hour
+const long interval = 1800000;     // Interval to check moisture (in milliseconds) - 1 hour
 
 void setup() {
   lcd.init();       // Initializing the LCD screen
@@ -45,7 +45,7 @@ void loop() {
     lcd.print("Moisture :");        // Displaying the text "Moisture :"
     lcd.print(Moisture);            // Displaying the read value
     lcd.setCursor(0, 1);         // Setting the cursor position to column 0, row 1
-    lcd.print("Time left: ");        // Displaying the text "Time left: "
+    lcd.print("EVACUATE: ");        // Displaying the text "Time left: "
     lcd.print("   "); // Clear previous countdown display
     lcd.setCursor(11, 1); // Move cursor to display time left
     lcd.print("0s"); // Default display 0s
@@ -63,5 +63,6 @@ void loop() {
     lcd.print("s");               // Displaying the unit for seconds
   }
 }
+
 
 
