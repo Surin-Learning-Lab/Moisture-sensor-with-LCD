@@ -50,17 +50,17 @@ void loop() {
     lcd.setCursor(11, 1); // Move cursor to display time left
     lcd.print("0s"); // Default display 0s
 
-    if (Moisture < 1000 && Moisture > 450) {
+    if (Moisture < 1000 && Moisture > 420) {
       digitalWrite(relay, HIGH);
-      delay(120000);  // Delay for 2 minutes
+      delay(300000);  // Delay for 2 minutes
       digitalWrite(relay, LOW);
     }
   } else {
     // Display the countdown timer
     lcd.setCursor(11, 1); // Move cursor to display time left
     // lcd.print("Time: ");
-    lcd.print(timeRemaining / 1000); // Displaying remaining time in seconds
-    lcd.print("s");               // Displaying the unit for seconds
+    lcd.print(timeRemaining / 1000 / 60); // Displaying remaining time in seconds
+    lcd.print("min");               // Displaying the unit for seconds
   }
 }
 
